@@ -1,0 +1,335 @@
+.movie-form-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+
+.top-nav {
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px 10px;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+.movie-form-container h1 {
+  margin-bottom: 20px;
+  color: var(--text-main);
+}
+
+.error-alert {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: var(--danger);
+  padding: 15px;
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.section-card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.section-card h2, .section-card h3, .section-card h4, .section-card h5 {
+  color: var(--text-main);
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.form-group input, 
+.form-group textarea, 
+.form-group select {
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.form-group input:focus, 
+.form-group textarea:focus, 
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: var(--bg-card);
+  box-shadow: 0 0 0 2px var(--primary-faded);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-main);
+  margin-bottom: 20px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  accent-color: var(--primary);
+  width: 18px;
+  height: 18px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.poster-preview {
+  width: 150px;
+  margin-top: 10px;
+  border-radius: var(--radius-md);
+}
+
+.theater-card {
+  border: 1px solid var(--border-color);
+  padding: 15px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+  background-color: var(--bg-surface);
+}
+
+.screen-card {
+  border: 1px solid var(--border-light);
+  padding: 15px;
+  border-radius: var(--radius-md);
+  margin-top: 15px;
+  background-color: var(--bg-elevated);
+}
+
+.schedule-card {
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 15px;
+  background-color: var(--bg-surface);
+  margin-bottom: 15px;
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.date-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--text-main);
+}
+
+.timings-list {
+  padding-left: 10px;
+}
+
+.timings-label {
+  font-weight: bold;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.no-timings {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+.timing-row {
+  margin-bottom: 10px;
+  background-color: var(--bg-card);
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.timing-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.time-edit-form {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+}
+
+.time-edit-form .form-group {
+  margin-bottom: 0;
+}
+
+.inline-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-add, .btn-save-large {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-add:hover, .btn-save-large:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-add-date {
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 10px;
+  transition: all 0.2s;
+}
+.btn-add-date:hover {
+  background-color: #138496;
+}
+
+.btn-add-time {
+  background-color: var(--bg-elevated);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 10px;
+  transition: all 0.2s;
+}
+.btn-add-time:hover {
+  background-color: var(--bg-surface);
+  border-color: var(--text-muted);
+}
+
+.btn-add-small, .btn-save-small {
+  background-color: var(--success);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 12px;
+}
+.btn-add-small:hover, .btn-save-small:hover {
+  background-color: #218838;
+}
+
+.btn-edit-small {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 12px;
+}
+.btn-edit-small:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-delete-small {
+  background-color: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  padding: 5px 11px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 12px;
+}
+.btn-delete-small:hover {
+  background-color: var(--danger);
+  color: white;
+}
+
+.btn-cancel-small {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--text-muted);
+  padding: 5px 11px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 12px;
+}
+.btn-cancel-small:hover {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+  border-top: 1px solid var(--border-color);
+  z-index: 100;
+}
+
+.btn-cancel-large {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  padding: 10px 25px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn-cancel-large:hover {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+}

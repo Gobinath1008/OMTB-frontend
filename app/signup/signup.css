@@ -1,0 +1,46 @@
+/* Signup container — no scroll on desktop */
+.signup-container {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-color: var(--bg-main);
+  padding: 20px;
+}
+
+.signup-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(229, 9, 20, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.signup-box {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.signup-box h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+}
+
+/* Mobile: allow scroll when form is taller than the viewport */
+@media (max-width: 768px) {
+  .signup-container {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    padding: 32px 16px;
+    align-items: flex-start;
+  }
+}

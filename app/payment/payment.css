@@ -1,0 +1,1141 @@
+/* ======================================================
+   CINEMATIC PAYMENT & CHECKOUT STYLES — REDESIGNED
+   ====================================================== */
+
+.payment-page {
+  min-height: calc(100vh - var(--navbar-height));
+  background-color: var(--bg-main);
+  padding-bottom: 80px;
+}
+
+/* ======================================================
+   TOP NAV — Back button + SSL badge in one unified bar
+   ====================================================== */
+.payment-top-nav {
+  background: rgba(31, 40, 51, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  padding: 12px 0;
+  margin-bottom: 28px;
+  position: sticky;
+  top: var(--navbar-height);
+  z-index: 50;
+}
+
+.nav-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Back to Seats button */
+.back-cinema-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.back-cinema-btn:hover {
+  background: var(--bg-card);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(-2px);
+}
+
+/* SSL Trust badge */
+.checkout-trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #22c55e;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ======================================================
+   MAIN CONTAINER & GRID
+   ====================================================== */
+.payment-main-container {
+  padding-top: 4px;
+}
+
+.payment-grid-layout {
+  display: grid;
+  grid-template-columns: 390px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* ======================================================
+   PROGRESS STEPPER
+   ====================================================== */
+.booking-stepper {
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 16px 24px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+  gap: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.step-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 800;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-color);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.step-item.completed .step-num {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+.step-item.active .step-num {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(229, 9, 20, 0.4);
+  font-weight: 800;
+}
+
+.step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.step-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.step-item.completed .step-title,
+.step-item.active .step-title {
+  color: #ffffff;
+}
+
+.step-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.step-item.completed .step-subtitle {
+  color: #22c55e;
+}
+
+.step-item.active .step-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.step-separator {
+  flex: 1;
+  min-width: 40px;
+  height: 2px;
+  background: var(--border-color);
+  margin: 0 16px;
+  border-radius: 2px;
+}
+
+.step-separator.active-sep {
+  background: linear-gradient(90deg, #22c55e, var(--primary));
+}
+
+/* ======================================================
+   CINEMA TICKET VOUCHER (LEFT COLUMN)
+   ====================================================== */
+.cinema-voucher-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+/* Dramatic gradient top strip */
+.voucher-head {
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #1a0508 0%, rgba(229, 9, 20, 0.25) 50%, #1f2833 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.voucher-head::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), #ff6b75, var(--primary));
+}
+
+.voucher-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.voucher-badge {
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(229, 9, 20, 0.4);
+}
+
+/* Movie hero section */
+.voucher-movie-hero {
+  padding: 22px 24px 16px;
+  background: linear-gradient(180deg, rgba(229, 9, 20, 0.05) 0%, transparent 100%);
+}
+
+.voucher-movie-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 10px;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+}
+
+.voucher-movie-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  color: #cbd5e1;
+  letter-spacing: 0.3px;
+}
+
+/* Ticket perforation tear line */
+.voucher-perforation {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  margin: 4px 0;
+}
+
+.dashed-tear-line {
+  flex: 1;
+  height: 0;
+  border-top: 2px dashed rgba(255, 255, 255, 0.15);
+  margin: 0 20px;
+}
+
+.notch {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background-color: var(--bg-main);
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  top: 1px;
+}
+
+.notch-left { left: -11px; }
+.notch-right { right: -11px; }
+
+/* Ticket detail body */
+.voucher-details-body {
+  padding: 18px 24px 24px;
+}
+
+/* Field group with icon-label-value pattern */
+.voucher-field-group {
+  margin-bottom: 4px;
+}
+
+.voucher-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 14px;
+}
+
+.voucher-grid-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+/* Label: small caps above value */
+.v-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.v-label-icon {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* Value: clearly separated from label */
+.v-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+  padding-left: 1px;
+}
+
+/* Seats section */
+.voucher-seats-section {
+  margin-bottom: 18px;
+  padding: 14px;
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+}
+
+.voucher-seat-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.v-seat-pill {
+  background: rgba(229, 9, 20, 0.12);
+  border: 1px solid rgba(229, 9, 20, 0.35);
+  color: #ff6b75;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.3px;
+}
+
+/* Billing breakdown */
+.voucher-billing {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 14px;
+  margin-bottom: 20px;
+}
+
+.bill-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.bill-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 10px 0;
+}
+
+.bill-total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0 0;
+}
+
+.total-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.total-amount-glow {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #22c55e;
+  text-shadow: 0 0 18px rgba(34, 197, 94, 0.35);
+  letter-spacing: -0.5px;
+}
+
+/* Barcode area */
+.voucher-barcode-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.fake-barcode {
+  width: 100%;
+  height: 40px;
+  background: repeating-linear-gradient(
+    90deg,
+    #ffffff,
+    #ffffff 2px,
+    transparent 2px,
+    transparent 5px,
+    #ffffff 5px,
+    #ffffff 8px,
+    transparent 8px,
+    transparent 10px
+  );
+  opacity: 0.7;
+  border-radius: 2px;
+}
+
+.barcode-number {
+  font-size: 0.62rem;
+  letter-spacing: 2.5px;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* ======================================================
+   PAYMENT FORMS BOX (RIGHT COLUMN)
+   ====================================================== */
+.payment-box-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.payment-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.box-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.box-subtitle {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+}
+
+.secure-shield-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(229, 9, 20, 0.1);
+  border: 1px solid rgba(229, 9, 20, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Payment Method Tabs */
+.payment-tabs-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.payment-tabs-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.pay-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pay-tab-btn:hover {
+  background: var(--bg-elevated);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.pay-tab-btn.active {
+  background: rgba(229, 9, 20, 0.12);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(229, 9, 20, 0.2);
+}
+
+/* ======================================================
+   VIRTUAL 3D CREDIT CARD
+   ====================================================== */
+.virtual-card-stage {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+  perspective: 900px;
+}
+
+.virtual-credit-card {
+  width: 100%;
+  max-width: 360px;
+  height: 200px;
+  background: linear-gradient(135deg, #1b2028 0%, #0d1015 60%, #1f0b0e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.virtual-credit-card::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -50%;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle, rgba(229, 9, 20, 0.2), transparent 70%);
+  pointer-events: none;
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.emv-chip {
+  width: 44px;
+  height: 32px;
+  background: linear-gradient(135deg, #ffd700, #b8860b);
+  border-radius: 6px;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.chip-line {
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.card-brand-logo {
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.card-number-display {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #ffffff;
+  font-family: 'Courier New', Courier, monospace;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.card-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.card-mini-label {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.card-name-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-expiry-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* ======================================================
+   INPUT FORM STYLES
+   ====================================================== */
+.card-input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.input-group.full-width {
+  grid-column: span 2;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.2px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: #ffffff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.22s ease;
+}
+
+.input-with-icon .input-field {
+  padding-left: 44px;
+}
+
+.input-field:focus {
+  border-color: var(--primary);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 3px var(--primary-faded);
+}
+
+.input-field.error {
+  border-color: var(--danger);
+  background: rgba(239, 68, 68, 0.06);
+}
+
+.input-field::placeholder {
+  color: rgba(155, 164, 181, 0.5);
+}
+
+.field-error-text {
+  font-size: 0.75rem;
+  color: var(--danger);
+  margin-top: 2px;
+}
+
+/* ======================================================
+   UPI TAB
+   ====================================================== */
+.upi-quick-apps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.upi-app-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 10px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: #ffffff;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upi-app-chip:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.upi-app-chip.active {
+  border-color: var(--primary);
+  background: rgba(229, 9, 20, 0.12);
+  box-shadow: 0 2px 12px rgba(229, 9, 20, 0.2);
+}
+
+.upi-instruction-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+}
+
+.instruction-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.inst-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.inst-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ======================================================
+   NET BANKING TAB
+   ====================================================== */
+.section-mini-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.popular-banks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.bank-chip-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 10px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: #ffffff;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bank-chip-btn:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.bank-chip-btn.active {
+  border-color: var(--primary);
+  background: rgba(229, 9, 20, 0.12);
+  box-shadow: 0 2px 12px rgba(229, 9, 20, 0.2);
+}
+
+.select-field {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+/* ======================================================
+   PAY BUTTON & GUARANTEE NOTE
+   ====================================================== */
+.complete-pay-btn {
+  width: 100%;
+  padding: 17px;
+  background: linear-gradient(135deg, #e50914 0%, #b80710 100%);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(229, 9, 20, 0.4);
+  transition: all 0.25s ease;
+  margin-top: 12px;
+  letter-spacing: 0.2px;
+}
+
+.complete-pay-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(229, 9, 20, 0.6);
+  filter: brightness(1.08);
+}
+
+.complete-pay-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.complete-pay-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.checkout-guarantee-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 14px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ======================================================
+   CONFIRMATION MODAL
+   ====================================================== */
+.confirmation-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(11, 12, 16, 0.88);
+  backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.celebration-modal-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 520px;
+  padding: 40px 32px 36px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(229, 9, 20, 0.2);
+  text-align: center;
+  position: relative;
+  animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Top accent line on modal */
+.celebration-modal-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), #22c55e);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+@keyframes modalPop {
+  0% { transform: scale(0.82); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.success-icon-ring {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.1);
+  border: 2px solid rgba(34, 197, 94, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+}
+
+.check-icon {
+  color: #22c55e;
+}
+
+.sparkle-icon {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  color: #f59e0b;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+.modal-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.modal-sub {
+  font-size: 0.93rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.confirmed-ticket-preview {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.conf-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.conf-row:last-child {
+  border-bottom: none;
+}
+
+.conf-label {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.conf-val {
+  color: #ffffff;
+  font-weight: 700;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
+}
+
+.total-conf-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  margin-top: 4px;
+  padding-top: 10px;
+  font-size: 1rem;
+}
+
+.modal-actions-row {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-secondary-btn,
+.modal-primary-btn {
+  flex: 1;
+  padding: 13px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.modal-primary-btn {
+  background: var(--primary);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 16px rgba(229, 9, 20, 0.4);
+}
+
+.modal-primary-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* ======================================================
+   RESPONSIVE DESIGN
+   ====================================================== */
+@media (max-width: 960px) {
+  .payment-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .payment-box-card {
+    padding: 20px 16px;
+  }
+
+  .card-input-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .input-group.full-width {
+    grid-column: span 1;
+  }
+
+  .booking-stepper {
+    padding: 12px 16px;
+    gap: 0;
+  }
+
+  .step-separator {
+    min-width: 24px;
+    margin: 0 8px;
+  }
+
+  .modal-actions-row {
+    flex-direction: column;
+  }
+
+  .upi-quick-apps {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .popular-banks-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .payment-top-nav {
+    position: static;
+  }
+}
+
+@media (max-width: 480px) {
+  .step-subtitle {
+    display: none;
+  }
+
+  .voucher-grid-row {
+    grid-template-columns: 1fr;
+  }
+
+  .total-amount-glow {
+    font-size: 1.5rem;
+  }
+}
+
