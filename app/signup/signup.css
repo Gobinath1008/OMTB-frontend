@@ -44,3 +44,36 @@
     align-items: flex-start;
   }
 }
+
+.signup-container .password-input-wrap {
+  position: relative;
+}
+
+.signup-container .password-input-wrap .form-input {
+  padding-right: 48px;
+}
+
+.signup-container .password-visibility-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.signup-container .password-visibility-toggle:hover,
+.signup-container .password-visibility-toggle:focus-visible {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}

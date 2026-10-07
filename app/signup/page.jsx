@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { apiUrl } from "../../lib/apiBase";
 import "./signup.css";
 
@@ -10,6 +11,8 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
   const router = useRouter();
@@ -151,29 +154,53 @@ export default function SignupPage() {
 
         <div className="form-group">
           <label className="form-label">Password</label>
-          <input
-            className="form-input"
-            type="password"
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
-            required
-            style={errors.password ? { borderColor: "var(--danger)" } : {}}
-          />
+          <div className="password-input-wrap">
+            <input
+              className="form-input"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter Password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
+              required
+              aria-invalid={Boolean(errors.password)}
+            />
+            <button
+              type="button"
+              className="password-visibility-toggle"
+              onClick={() => setShowPassword((visible) => !visible)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {errors.password && <span className="text-danger" style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>{errors.password}</span>}
         </div>
 
         <div className="form-group mb-3">
           <label className="form-label">Confirm Password</label>
-          <input
-            className="form-input"
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => { setConfirmPassword(e.target.value); clearError("confirmPassword"); }}
-            required
-            style={errors.confirmPassword ? { borderColor: "var(--danger)" } : {}}
-          />
+          <div className="password-input-wrap">
+            <input
+              className="form-input"
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm Password"
+              autoComplete="new-password"
+              value={confirmPassword}
+              onChange={(e) => { setConfirmPassword(e.target.value); clearError("confirmPassword"); }}
+              required
+              aria-invalid={Boolean(errors.confirmPassword)}
+            />
+            <button
+              type="button"
+              className="password-visibility-toggle"
+              onClick={() => setShowConfirmPassword((visible) => !visible)}
+              aria-label={showConfirmPassword ? "Hide confirmation password" : "Show confirmation password"}
+              aria-pressed={showConfirmPassword}
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {errors.confirmPassword && <span className="text-danger" style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>{errors.confirmPassword}</span>}
         </div>
 

@@ -1,14 +1,14 @@
 "use client";
-import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Hero from "./component/Hero";
 import Footer from "./component/Footer";
 import { getMovies } from "../lib/api";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [showLoginMsg, setShowLoginMsg] = useState(false);
   const [movies, setMovies] = useState<any[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     getMovies()
@@ -28,7 +28,7 @@ export default function Home() {
     <>
       
 
-      <Hero movies={sortedMovies} onBookNow={() => setShowLoginMsg(true)} />
+      <Hero movies={sortedMovies} onBookNow={() => router.push("/login")} />
 
       <div className="container mt-4 mb-4">
         <div className="flex items-center justify-between mb-3">
@@ -49,7 +49,7 @@ export default function Home() {
               <div 
                 className="movie-card" 
                 key={index} 
-                onClick={() => setShowLoginMsg(true)}
+                onClick={() => router.push("/login")}
               >
                 <div className="movie-poster-wrapper">
                   <img className="movie-poster" src={movie.img} alt={movie.name} />
@@ -75,22 +75,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
-      {/* LOGIN REQUIRED MODAL */}
-      {showLoginMsg && (
-        <div className="modal-overlay" onClick={() => setShowLoginMsg(false)}>
-          <div className="modal-content text-center fade-in" onClick={e => e.stopPropagation()}>
-            <h2 className="mb-2">Login Required</h2>
-            <p className="mb-3">Please login to book a movie ticket.</p>
-            <div className="flex gap-2">
-              <Link href="/login" style={{flex: 1}}>
-                <button className="btn btn-primary" style={{width: '100%'}}>Login</button>
-              </Link>
-              <button onClick={() => setShowLoginMsg(false)} className="btn btn-secondary" style={{flex: 1}}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <Footer role="guest" />
     </>
