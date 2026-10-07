@@ -32,27 +32,26 @@ export default function BookingPage() {
 
     const fetchMovie = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/movies");
-        const data = await response.json();
-        
-        if (Array.isArray(data)) {
-          const selected = data.find((m: any) => String(m.id) === String(id));
-          if (selected) {
-             setMovie(selected);
-             // Extract dates
-             const dates = new Set<string>();
-             selected.theaters?.forEach((t: any) => {
-               t.screens?.forEach((s: any) => {
-                 s.schedules?.forEach((sched: any) => {
-                   if (sched.date) dates.add(sched.date);
-                 });
-               });
-               if (t.date) dates.add(t.date); // legacy fallback
-             });
-             const uniqueDates = Array.from(dates).sort();
-             if (uniqueDates.length > 0) {
-               setSelectedDate(uniqueDates[0]);
-             }
+        const response = await fetch(`http://localhost:8080/api/movies/${encodeURIComponent(String(id))}`);
+        if (!response.ok) {
+          throw new Error(`Failed to load movie (${response.status})`);
+        }
+        const selected = await response.json();
+
+        if (selected) {
+          setMovie(selected);
+          const dates = new Set<string>();
+          selected.theaters?.forEach((t: any) => {
+            t.screens?.forEach((s: any) => {
+              s.schedules?.forEach((sched: any) => {
+                if (sched.date) dates.add(sched.date);
+              });
+            });
+            if (t.date) dates.add(t.date);
+          });
+          const uniqueDates = Array.from(dates).sort();
+          if (uniqueDates.length > 0) {
+            setSelectedDate(uniqueDates[0]);
           }
         }
       } catch (e) {
@@ -180,7 +179,7 @@ export default function BookingPage() {
                   <span className="format-pill">2D • 3D • IMAX</span>
                 </div>
 
-                <h1 className="movie-title">{movie.name}</h1>
+                <h1 className="booking-detail-title">{movie.name}</h1>
                 
                 <div className="movie-meta-bar">
                    <div className="meta-badge rating-badge">

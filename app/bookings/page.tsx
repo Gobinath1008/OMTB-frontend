@@ -21,6 +21,45 @@ interface Booking {
   bookedAt?: string;
 }
 
+function getShowEndDate(booking: Pick<Booking, "date" | "time">): Date | null {
+  const isoDate = booking.date.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  const legacyDate = booking.date.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+  const year = Number(isoDate?.[1] ?? legacyDate?.[3]);
+  const month = Number(isoDate?.[2] ?? legacyDate?.[2]);
+  const day = Number(isoDate?.[3] ?? legacyDate?.[1]);
+
+  if (!year || !month || !day) return null;
+
+  const timeRange = booking.time.split(/\s+-\s*/);
+  const endTime = timeRange[timeRange.length - 1];
+  const parsedTime = endTime.match(/^(\d{1,2}):(\d{2})(?:\s*(AM|PM))?$/i);
+  if (!parsedTime) return null;
+
+  let hours = Number(parsedTime[1]);
+  const minutes = Number(parsedTime[2]);
+  const period = parsedTime[3]?.toUpperCase();
+
+  if (minutes > 59) return null;
+  if (period) {
+    if (hours < 1 || hours > 12) return null;
+    if (period === "PM" && hours !== 12) hours += 12;
+    if (period === "AM" && hours === 12) hours = 0;
+  } else if (hours > 23) {
+    return null;
+  }
+
+  const showEnd = new Date(year, month - 1, day, hours, minutes);
+  if (
+    showEnd.getFullYear() !== year ||
+    showEnd.getMonth() !== month - 1 ||
+    showEnd.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return showEnd;
+}
+
 export default function MyBookingsPage() {
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -201,24 +240,6 @@ export default function MyBookingsPage() {
     URL.revokeObjectURL(url);
   };
 
-  const isBookingExpired = (booking: Booking): boolean => {
-    const now = new Date();
-    const [day, month, year] = booking.date.split("-").map(Number);
-    const [timePart, period] = booking.time.split(" ");
-    const [hoursStr, minutesStr] = timePart.split(":").map(s => s.trim());
-    let hours = parseInt(hoursStr);
-    const minutes = parseInt(minutesStr || "0");
-
-    if (period && period.toUpperCase() === "PM" && hours !== 12) {
-      hours += 12;
-    } else if (period && period.toUpperCase() === "AM" && hours === 12) {
-      hours = 0;
-    }
-
-    const bookingDate = new Date(year, month - 1, day, hours, minutes);
-    return now > bookingDate;
-  };
-
   return (
     <div className="bookings-page">
       
@@ -259,16 +280,21 @@ export default function MyBookingsPage() {
         ) : (
           <div className="bookings-grid">
             {bookings.map((booking) => {
-              const expired = isBookingExpired(booking);
+              const showEndDate = getShowEndDate(booking);
+              const expired = showEndDate !== null && Date.now() > showEndDate.getTime();
+              const showDateUnavailable = showEndDate === null;
               return (
-              <div className={`booking-card ${expired ? "expired" : ""}`} key={booking.id}>
-                {expired && (
-                  <div className="expired-badge">
+              <div
+                className={`booking-card ${expired ? "expired" : ""} ${showDateUnavailable ? "date-unavailable" : ""}`}
+                key={booking.id}
+              >
+                {(expired || showDateUnavailable) && (
+                  <div className={`expired-badge ${showDateUnavailable ? "date-unavailable-badge" : ""}`}>
                     <AlertCircle size={14} />
-                    Show Expired
+                    {showDateUnavailable ? "Show time unavailable" : "Show Expired"}
                   </div>
                 )}
-                <div className="booking-header" style={expired ? { background: "#999" } : {}}>
+                <div className="booking-header">
                   <h2>{booking.movieName}</h2>
                   <span className="booking-id">#{booking.id}</span>
                 </div>

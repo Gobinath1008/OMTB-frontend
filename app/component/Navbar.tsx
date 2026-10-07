@@ -28,8 +28,12 @@ export default function Navbar({ role = "guest" }: { role?: "guest" | "customer"
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("bookings");
+    setUserData(null);
+    setCurrentRole("guest");
+    setShowProfile(false);
     setMobileOpen(false);
-    router.push("/login");
+    router.replace("/");
+    router.refresh();
   };
 
   const openProfile = () => {

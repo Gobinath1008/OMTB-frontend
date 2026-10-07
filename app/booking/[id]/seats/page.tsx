@@ -51,13 +51,13 @@ function SeatBookingContent() {
   useEffect(() => {
     const fetchMovieRate = async () => {
       try {
-        const res = await fetch("http://localhost:8080/api/movies");
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          const movie = data.find((m: any) => String(m.id) === String(id));
-          if (movie && movie.rate) {
-            setMovieRate(movie.rate);
-          }
+        const res = await fetch(`http://localhost:8080/api/movies/${encodeURIComponent(String(id))}`);
+        if (!res.ok) {
+          throw new Error(`Failed to load movie rate (${res.status})`);
+        }
+        const movie = await res.json();
+        if (movie?.rate) {
+          setMovieRate(movie.rate);
         }
       } catch (err) {
         console.error("Error fetching movie rate", err);
