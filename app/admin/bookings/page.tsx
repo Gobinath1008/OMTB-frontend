@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import Footer from "../../component/Footer";
+import { apiUrl } from "../../../lib/apiBase";
 
 interface Booking {
   id: number;
@@ -45,7 +46,7 @@ export default function AdminBookingsPage() {
 
   const loadBookings = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/bookings");
+      const res = await fetch(apiUrl("/bookings"));
       const data = await res.json();
 
       if (res.ok) {
@@ -64,7 +65,7 @@ export default function AdminBookingsPage() {
     if (!bookingToDelete) return;
 
     try {
-      const res = await fetch("http://localhost:8080/api/bookings", {
+      const res = await fetch(apiUrl("/bookings"), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,7 +96,7 @@ export default function AdminBookingsPage() {
     if (!editBooking) return;
 
     try {
-      const res = await fetch("http://localhost:8080/api/bookings", {
+      const res = await fetch(apiUrl("/bookings"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

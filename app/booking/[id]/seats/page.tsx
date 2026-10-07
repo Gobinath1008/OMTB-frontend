@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, Suspense, useMemo } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
+import { apiUrl } from "../../../../lib/apiBase";
 import "./seats.css";
 import { 
   ChevronLeft, 
@@ -51,7 +52,7 @@ function SeatBookingContent() {
   useEffect(() => {
     const fetchMovieRate = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/movies/${encodeURIComponent(String(id))}`);
+        const res = await fetch(apiUrl(`/movies/${encodeURIComponent(String(id))}`));
         if (!res.ok) {
           throw new Error(`Failed to load movie rate (${res.status})`);
         }
@@ -75,9 +76,11 @@ function SeatBookingContent() {
 
       try {
         const res = await fetch(
-          `http://localhost:8080/api/movies?movieId=${id}&theater=${encodeURIComponent(
-            theater
-          )}&date=${encodeURIComponent(date)}&time=${encodeURIComponent(time)}`
+          apiUrl(
+            `/movies?movieId=${id}&theater=${encodeURIComponent(
+              theater
+            )}&date=${encodeURIComponent(date)}&time=${encodeURIComponent(time)}`
+          )
         );
 
         const data = await res.json();

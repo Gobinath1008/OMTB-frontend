@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import MovieForm from "../../MovieForm";
 import { useParams } from "next/navigation";
+import { apiUrl } from "../../../../../lib/apiBase";
 
 export default function EditMoviePage() {
   const { movieId } = useParams();
@@ -11,7 +12,7 @@ export default function EditMoviePage() {
   useEffect(() => {
     const fetchMovie = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/movies/${movieId}`);
+        const res = await fetch(apiUrl(`/movies/${movieId}`));
         if (!res.ok) throw new Error("Failed to load movie");
         const data = await res.json();
         setMovie(data);

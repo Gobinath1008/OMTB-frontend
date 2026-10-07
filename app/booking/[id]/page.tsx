@@ -1,6 +1,7 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
+import { apiUrl } from "../../../lib/apiBase";
 import "./booking.css";
 import { 
   ChevronLeft, 
@@ -32,7 +33,7 @@ export default function BookingPage() {
 
     const fetchMovie = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/movies/${encodeURIComponent(String(id))}`);
+        const response = await fetch(apiUrl(`/movies/${encodeURIComponent(String(id))}`));
         if (!response.ok) {
           throw new Error(`Failed to load movie (${response.status})`);
         }

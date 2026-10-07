@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 
 import Footer from "../../component/Footer";
+import { apiUrl } from "../../../lib/apiBase";
 
 interface UploadedImage {
   filename: string;
@@ -20,7 +21,7 @@ export default function AdminUploadedPage() {
 
   const fetchImages = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/uploads");
+      const response = await fetch(apiUrl("/uploads"));
       const result = await response.json();
       if (response.ok) {
         setImages(result.images);
@@ -36,7 +37,7 @@ export default function AdminUploadedPage() {
     if (!confirm(`Delete "${filename}"?`)) return;
 
     try {
-      const response = await fetch("http://localhost:8080/api/uploads", {
+      const response = await fetch(apiUrl("/uploads"), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filename }),
@@ -60,7 +61,7 @@ export default function AdminUploadedPage() {
     if (!file) return;
 
     try {
-      const deleteRes = await fetch("http://localhost:8080/api/uploads", {
+      const deleteRes = await fetch(apiUrl("/uploads"), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ filename }),
@@ -80,7 +81,7 @@ export default function AdminUploadedPage() {
     formData.append("image", file);
 
     try {
-      const response = await fetch("http://localhost:8080/api/upload", {
+      const response = await fetch(apiUrl("/upload"), {
         method: "POST",
         body: formData,
       });

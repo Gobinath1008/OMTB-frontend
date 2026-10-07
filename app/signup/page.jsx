@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { apiUrl } from "../../lib/apiBase";
 import "./signup.css";
 
 export default function SignupPage() {
@@ -70,7 +71,7 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/signup", {
+      const res = await fetch(apiUrl("/auth/signup"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

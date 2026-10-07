@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Hero from "../component/Hero";
 import Footer from "../component/Footer";
 import { useRouter } from "next/navigation";
+import { apiUrl } from "../../lib/apiBase";
 
 export default function CustomerPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,7 +26,7 @@ export default function CustomerPage() {
 
     const fetchMovies = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/movies");
+        const response = await fetch(apiUrl("/movies"));
         const data = await response.json();
         setMovies(data || []);
       } catch (err) {

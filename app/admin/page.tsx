@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Hero from "../component/Hero";
 import Footer from "../component/Footer";
-
+import { apiUrl } from "../../lib/apiBase";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function AdminPage() {
 
   const fetchMovies = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/movies");
+      const response = await fetch(apiUrl("/movies"));
       const data = await response.json();
       setMovies(data || []);
     } catch (err) {
@@ -40,7 +40,7 @@ export default function AdminPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this movie?")) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/movies/${id}`, { method: 'DELETE' });
+      const res = await fetch(apiUrl(`/movies/${id}`), { method: 'DELETE' });
       if (res.ok) {
         fetchMovies();
       } else {

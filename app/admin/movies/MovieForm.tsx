@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { apiUrl } from "../../../lib/apiBase";
 import "./MovieForm.css";
 
 export default function MovieForm({ initialData = null, isEdit = false }: { initialData?: any, isEdit?: boolean }) {
@@ -260,7 +261,7 @@ export default function MovieForm({ initialData = null, isEdit = false }: { init
   const handleSubmit = async () => {
     setError(null);
     try {
-      const url = isEdit ? `http://localhost:8080/api/movies/${movie.id}` : `http://localhost:8080/api/movies/single`;
+      const url = isEdit ? apiUrl(`/movies/${movie.id}`) : apiUrl("/movies/single");
       const method = isEdit ? "PUT" : "POST";
 
       // Create a clean copy of the movie object without frontend-only state

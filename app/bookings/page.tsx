@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import "./bookings.css";
 
 import { Calendar, Clock, MapPin, CreditCard, XCircle, Film, Download, Ticket, AlertCircle } from "lucide-react";
+import { apiUrl } from "../../lib/apiBase";
 
 interface Booking {
   id: number;
@@ -88,7 +89,7 @@ export default function MyBookingsPage() {
     const user = JSON.parse(userStr);
 
     try {
-      const res = await fetch(`http://localhost:8080/api/bookings/user/${user.id}`);
+      const res = await fetch(apiUrl(`/bookings/user/${user.id}`));
       const data = await res.json();
 
       if (res.ok) {
@@ -108,7 +109,7 @@ export default function MyBookingsPage() {
     if (!bookingToCancel) return;
 
     try {
-      const res = await fetch("http://localhost:8080/api/bookings", {
+      const res = await fetch(apiUrl("/bookings"), {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

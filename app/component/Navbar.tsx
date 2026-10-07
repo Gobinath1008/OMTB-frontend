@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Film, User, LogOut, Home, Calendar, Ticket, Settings, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { apiUrl } from "../../lib/apiBase";
 
 export default function Navbar({ role = "guest" }: { role?: "guest" | "customer" | "admin" }) {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function Navbar({ role = "guest" }: { role?: "guest" | "customer"
   const saveProfile = async () => {
     setSaving(true);
     try {
-      const response = await fetch("http://localhost:8080/api/auth/update", {
+      const response = await fetch(apiUrl("/auth/update"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

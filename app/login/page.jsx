@@ -1,32 +1,17 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Home } from "lucide-react";
+import { Eye, EyeOff, Home } from "lucide-react";
+import { apiUrl } from "../../lib/apiBase";
 import "./login.css";
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
+  const [identifierError, setIdentifierError] = useState("");
   const [password, setPassword] = useState({ value: "", error: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState("");
   const router = useRouter();
-
-  const validateForm = () => {
-    const idError = !identifier.trim()
-      ? "Email or Username is required"
-      : identifier.trim().length < 3
-        ? "Email or Username must be at least 3 characters"
-        : "";
-
-    const passError = !password.value
-      ? "Password is required"
-      : password.value.length < 6
-        ? "Password must be at least 6 characters"
-        : "";
-
-    setPassword({ value: password.value, error: passError });
-    setFormError(idError);
-    return !idError && !passError;
-  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -39,17 +24,16 @@ export default function LoginPage() {
 
     const passError = !password.value
       ? "Password is required"
-      : password.value.length < 6
-        ? "Password must be at least 6 characters"
-        : "";
+      : "";
 
-    if (idError) setFormError(idError);
-    if (passError) setPassword({ value: password.value, error: passError });
+    setIdentifierError(idError);
+    setFormError("");
+    setPassword({ value: password.value, error: passError });
 
     if (idError || passError) return;
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/login", {
+      const res = await fetch(apiUrl("/auth/login"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,20 +42,25 @@ export default function LoginPage() {
       });
       const data = await res.json();
 
-      if (data.success) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+      if (res.ok && data.success && data.user) {
+        const role = String(data.user.role || "").replace(/^ROLE_/i, "").toLowerCase();
+        const user = { ...data.user, role };
+        localStorage.setItem("user", JSON.stringify(user));
 
-        if (data.user.role === "admin") {
+        if (role === "admin") {
           router.push("/admin");
-        } else if (data.user.role === "customer") {
+        } else if (role === "customer") {
           router.push("/customer");
+        } else {
+          localStorage.removeItem("user");
+          setFormError("Your account has an unsupported role. Contact an administrator.");
         }
       } else {
-        setFormError(data.message || "Invalid Credentials");
+        setFormError(data.message || "We couldn't sign you in. Check your email/username and password.");
       }
     } catch (error) {
       console.error(error);
-      setFormError("Server Error. Please try again.");
+      setFormError("Unable to reach the sign-in service. Check your connection and try again.");
     }
   };
 
@@ -95,39 +84,61 @@ export default function LoginPage() {
             className="form-input"
             type="text"
             placeholder="Enter Email or Username"
+            autoComplete="username"
+            required
             value={identifier}
             onChange={(e) => {
               setIdentifier(e.target.value);
-              if (formError) setFormError("");
+              setIdentifierError("");
+              setFormError("");
             }}
-            style={formError ? { borderColor: "var(--danger)" } : {}}
+            aria-invalid={Boolean(identifierError)}
           />
-          {formError && (
-            <span className="text-danger" style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>
-              {formError}
+          {identifierError && (
+            <span className="text-danger" style={{ color: "var(--danger)", fontSize: "0.85rem" }}>
+              {identifierError}
             </span>
           )}
         </div>
 
         <div className="form-group mb-3">
           <label className="form-label">Password</label>
-          <input
-            className="form-input"
-            type="password"
-            placeholder="Enter Password"
-            value={password.value}
-            onChange={(e) => {
-              setPassword({ value: e.target.value, error: "" });
-              if (password.error) setPassword({ value: e.target.value, error: "" });
-            }}
-            style={password.error ? { borderColor: "var(--danger)" } : {}}
-          />
+          <div className="password-input-wrap">
+            <input
+              className="form-input"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter Password"
+              autoComplete="current-password"
+              required
+              value={password.value}
+              onChange={(e) => {
+                setPassword({ value: e.target.value, error: "" });
+                setFormError("");
+              }}
+              aria-invalid={Boolean(password.error || formError)}
+            />
+            <button
+              type="button"
+              className="password-visibility-toggle"
+              onClick={() => setShowPassword((visible) => !visible)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           {password.error && (
             <span className="text-danger" style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>
               {password.error}
             </span>
           )}
         </div>
+
+        {formError && (
+          <p className="login-error" role="alert">
+            {formError}
+          </p>
+        )}
 
         <div className="flex flex-col gap-2">
           <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>

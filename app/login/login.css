@@ -45,6 +45,45 @@
   border-color: var(--primary-faded);
 }
 
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap .form-input {
+  padding-right: 48px;
+}
+
+.password-visibility-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.password-visibility-toggle:hover,
+.password-visibility-toggle:focus-visible {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+
+.login-error {
+  margin: 0 0 var(--spacing-md);
+  color: var(--danger);
+  font-size: 0.875rem;
+}
+
 .login-box {
   width: 100%;
   max-width: 420px;

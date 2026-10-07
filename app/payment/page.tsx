@@ -1,6 +1,7 @@
 "use client";
 import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { apiUrl } from "../../lib/apiBase";
 import "./payment.css";
 import { 
   CreditCard, 
@@ -142,7 +143,7 @@ function PaymentContent() {
     const user = JSON.parse(userStr);
 
     try {
-      const bookingRes = await fetch("http://localhost:8080/api/bookings", {
+      const bookingRes = await fetch(apiUrl("/bookings"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
