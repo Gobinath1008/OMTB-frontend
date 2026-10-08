@@ -62,7 +62,7 @@ const validateCardNumber = (value: string): string => {
   if (digits.length !== expectedLength) {
     return `${brand} card number must be ${expectedLength} digits`;
   }
-  if (!passesLuhn(digits)) return "Invalid card number. Please check and re-enter";
+  // Luhn check removed
   return "";
 };
 

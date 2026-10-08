@@ -11,12 +11,28 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        if (user.role === "customer") {
+          router.replace("/customer");
+          return;
+        } else if (user.role === "admin") {
+          router.replace("/admin");
+          return;
+        }
+      } catch (e) {
+        // invalid user
+      }
+    }
+
     getMovies()
       .then((res) => {
         setMovies(res.data || []);
       })
       .catch((err) => console.error("Failed to load movies:", err));
-  }, []);
+  }, [router]);
 
   const sortedMovies = [...movies].sort((a, b) => b.id - a.id);
   const filteredMovies = sortedMovies.filter((movie) =>
