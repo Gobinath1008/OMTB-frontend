@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Armchair, AlertCircle, Loader2 } from "lucide-react";
 import { apiUrl } from "../../lib/apiBase";
 
@@ -27,7 +28,7 @@ type SeatAction = "keep" | "change" | "cancel";
 
 const ROWS = ["A", "B", "C", "D", "E", "F"];
 const COLS = 8;
-const VIP_ROWS = ["A", "B"];
+const VIP_ROWS = ["E", "F"];
 const VIP_SURCHARGE = 50;
 
 const isVip = (seat: string) => VIP_ROWS.includes(seat.charAt(0));
@@ -98,6 +99,7 @@ export default function ManageBookingModal({ booking, onClose, onUpdated }: Prop
 
   const setAction = (seat: string, action: SeatAction) => {
     setActions((prev) => ({ ...prev, [seat]: action }));
+    setNewSeats([]); // Reset selected new seats when actions change to avoid count mismatches
     setError(null);
   };
 
@@ -108,18 +110,51 @@ export default function ManageBookingModal({ booking, onClose, onUpdated }: Prop
       setNewSeats(newSeats.filter((s) => s !== seat));
       return;
     }
-    if (newSeats.length >= changeFrom.length) {
-      setError(
-        `You are changing ${changeFrom.length} seat${changeFrom.length > 1 ? "s" : ""}. Deselect a new seat first.`
-      );
-      return;
+    
+    const isTargetVip = isVip(seat);
+    const vipChanging = changeFrom.filter(isVip).length;
+    const normalChanging = changeFrom.length - vipChanging;
+    const vipNew = newSeats.filter(isVip).length;
+    const normalNew = newSeats.filter((s) => !isVip(s)).length;
+
+    if (isTargetVip) {
+      if (vipNew >= vipChanging) {
+        if (vipChanging === 0) {
+          setError("You can only change to Executive seats since you haven't selected any VIP seats to change.");
+        } else {
+          setError(`You are changing ${vipChanging} VIP seat${vipChanging > 1 ? "s" : ""}. Deselect a new VIP seat first.`);
+        }
+        return;
+      }
+    } else {
+      if (normalNew >= normalChanging) {
+        if (normalChanging === 0) {
+          setError("You can only change to VIP seats since you haven't selected any Executive seats to change.");
+        } else {
+          setError(`You are changing ${normalChanging} Executive seat${normalChanging > 1 ? "s" : ""}. Deselect a new Executive seat first.`);
+        }
+        return;
+      }
     }
+    
     setNewSeats([...newSeats, seat]);
   };
 
-  const pairs = changeFrom
-    .map((from, i) => ({ from, to: newSeats[i] }))
-    .filter((p): p is { from: string; to: string } => Boolean(p.to));
+  const pairs = useMemo(() => {
+    const vipFrom = changeFrom.filter(isVip);
+    const normalFrom = changeFrom.filter((s) => !isVip(s));
+    const vipTo = newSeats.filter(isVip);
+    const normalTo = newSeats.filter((s) => !isVip(s));
+
+    const paired = [];
+    for (let i = 0; i < Math.min(vipFrom.length, vipTo.length); i++) {
+      paired.push({ from: vipFrom[i], to: vipTo[i] });
+    }
+    for (let i = 0; i < Math.min(normalFrom.length, normalTo.length); i++) {
+      paired.push({ from: normalFrom[i], to: normalTo[i] });
+    }
+    return paired;
+  }, [changeFrom, newSeats]);
 
   const refund = cancelSeats.reduce((sum, s) => sum + prices[s], 0);
   const priceDifference = pairs.reduce(
@@ -169,7 +204,9 @@ export default function ManageBookingModal({ booking, onClose, onUpdated }: Prop
     }
   };
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <div className="mb-overlay" onClick={onClose}>
       <div className="mb-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
         <div className="mb-header">
@@ -321,6 +358,7 @@ export default function ManageBookingModal({ booking, onClose, onUpdated }: Prop
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

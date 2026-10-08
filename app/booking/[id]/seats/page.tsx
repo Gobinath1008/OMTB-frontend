@@ -30,14 +30,14 @@ function SeatBookingContent() {
   const screen = decodeURIComponent(params.get("screen") || "Screen 1");
 
   // Seat layout configuration
-  // Rows A-B: Recliner / VIP, Rows C-F: Executive
+  // Rows A-D: Executive, Rows E-F: Recliner / VIP
   const rows = [
-    { row: "A", tier: "VIP Recliner", priceAdd: 50 },
-    { row: "B", tier: "VIP Recliner", priceAdd: 50 },
+    { row: "A", tier: "Executive", priceAdd: 0 },
+    { row: "B", tier: "Executive", priceAdd: 0 },
     { row: "C", tier: "Executive", priceAdd: 0 },
     { row: "D", tier: "Executive", priceAdd: 0 },
-    { row: "E", tier: "Executive", priceAdd: 0 },
-    { row: "F", tier: "Executive", priceAdd: 0 },
+    { row: "E", tier: "VIP Recliner", priceAdd: 50 },
+    { row: "F", tier: "VIP Recliner", priceAdd: 50 },
   ];
   const cols = 8;
   const MAX_SEATS = 8;
@@ -236,54 +236,14 @@ function SeatBookingContent() {
             <div className="seats-stage-scroll">
               <div className="seats-stage">
                 
-                {/* VIP Recliner Tier */}
-                <div className="tier-label-divider">
-                  <span className="tier-tag vip-tag">✨ VIP RECLINER — ₹{basePrice + 50}</span>
-                  <div className="tier-line"></div>
-                </div>
-
-                <div className="seats-rows-group">
-                  {rows.slice(0, 2).map(({ row, tier, priceAdd }) => (
-                    <div className="seat-row" key={row}>
-                      <div className="row-label vip-label">{row}</div>
-                      <div className="seats-cluster">
-                        {Array.from({ length: cols }, (_, i) => {
-                          const seat = `${row}${i + 1}`;
-                          const isBooked = bookedSeats.includes(seat);
-                          const isSelected = selectedSeats.includes(seat);
-                          
-                          let seatClass = "cinema-seat vip-seat";
-                          if (isBooked) seatClass += " booked";
-                          if (isSelected) seatClass += " selected";
-
-                          return (
-                            <button
-                              key={seat}
-                              type="button"
-                              className={seatClass}
-                              onClick={() => toggleSeat(seat)}
-                              disabled={isBooked}
-                              title={`${seat} - ${tier} (₹${basePrice + priceAdd})`}
-                            >
-                              <div className="seat-cushion"></div>
-                              <span className="seat-num">{i + 1}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <div className="row-label vip-label">{row}</div>
-                    </div>
-                  ))}
-                </div>
-
                 {/* Executive Tier */}
-                <div className="tier-label-divider mt-4">
+                <div className="tier-label-divider">
                   <span className="tier-tag prime-tag">EXECUTIVE — ₹{basePrice}</span>
                   <div className="tier-line"></div>
                 </div>
 
                 <div className="seats-rows-group">
-                  {rows.slice(2).map(({ row, tier, priceAdd }) => (
+                  {rows.slice(0, 4).map(({ row, tier, priceAdd }) => (
                     <div className="seat-row" key={row}>
                       <div className="row-label">{row}</div>
                       <div className="seats-cluster">
@@ -312,6 +272,46 @@ function SeatBookingContent() {
                         })}
                       </div>
                       <div className="row-label">{row}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* VIP Recliner Tier */}
+                <div className="tier-label-divider mt-4">
+                  <span className="tier-tag vip-tag">✨ VIP RECLINER — ₹{basePrice + 50}</span>
+                  <div className="tier-line"></div>
+                </div>
+
+                <div className="seats-rows-group">
+                  {rows.slice(4).map(({ row, tier, priceAdd }) => (
+                    <div className="seat-row" key={row}>
+                      <div className="row-label vip-label">{row}</div>
+                      <div className="seats-cluster">
+                        {Array.from({ length: cols }, (_, i) => {
+                          const seat = `${row}${i + 1}`;
+                          const isBooked = bookedSeats.includes(seat);
+                          const isSelected = selectedSeats.includes(seat);
+                          
+                          let seatClass = "cinema-seat vip-seat";
+                          if (isBooked) seatClass += " booked";
+                          if (isSelected) seatClass += " selected";
+
+                          return (
+                            <button
+                              key={seat}
+                              type="button"
+                              className={seatClass}
+                              onClick={() => toggleSeat(seat)}
+                              disabled={isBooked}
+                              title={`${seat} - ${tier} (₹${basePrice + priceAdd})`}
+                            >
+                              <div className="seat-cushion"></div>
+                              <span className="seat-num">{i + 1}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div className="row-label vip-label">{row}</div>
                     </div>
                   ))}
                 </div>
