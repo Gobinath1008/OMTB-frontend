@@ -40,11 +40,21 @@ export default function Home() {
     movie.title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleMovieClick = (movieId: string | number) => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      router.push(`/booking/${movieId}`);
+    } else {
+      sessionStorage.setItem("redirectAfterLogin", `/booking/${movieId}`);
+      router.push("/login");
+    }
+  };
+
   return (
     <>
       
 
-      <Hero movies={sortedMovies} onBookNow={() => router.push("/login")} />
+      <Hero movies={sortedMovies} onBookNow={(movie) => handleMovieClick(movie.id)} />
 
       <div className="container mt-4 mb-4">
         <div className="flex items-center justify-between mb-3">
@@ -65,7 +75,7 @@ export default function Home() {
               <div 
                 className="movie-card" 
                 key={index} 
-                onClick={() => router.push("/login")}
+                onClick={() => handleMovieClick(movie.id)}
               >
                 <div className="movie-poster-wrapper">
                   <img className="movie-poster" src={movie.img} alt={movie.name} />

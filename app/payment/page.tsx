@@ -53,16 +53,9 @@ const passesLuhn = (digits: string): boolean => {
 };
 
 const validateCardNumber = (value: string): string => {
-  const digits = value.replace(/\s/g, "");
+  const digits = value.replace(/\D/g, "");
   if (!digits) return "Card number is required";
-  if (!/^\d+$/.test(digits)) return "Card number can contain digits only";
-  const brand = detectCardBrand(digits);
-  const expectedLength = brand === "AMEX" ? 15 : 16;
-  if (brand === "CARD") return "Unsupported card type. Use Visa, Mastercard, RuPay or Amex";
-  if (digits.length !== expectedLength) {
-    return `${brand} card number must be ${expectedLength} digits`;
-  }
-  // Luhn check removed
+  if (digits.length !== 16) return "Card number must be exactly 16 digits";
   return "";
 };
 
@@ -85,9 +78,8 @@ const validateExpiry = (value: string): string => {
 
 const validateCvv = (value: string, brand: CardBrand): string => {
   if (!value.trim()) return "CVV is required";
-  const expected = brand === "AMEX" ? 4 : 3;
-  if (!/^\d+$/.test(value) || value.length !== expected) {
-    return `CVV must be ${expected} digits`;
+  if (!/^\d{3,4}$/.test(value)) {
+    return "CVV must be 3 or 4 digits";
   }
   return "";
 };
@@ -162,7 +154,8 @@ function PaymentContent() {
   };
 
   const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    let v = value.replace(/\s+/g, "").replace(/\D/g, "");
+    if (v.length > 16) v = v.slice(0, 16);
     if (!v) return "";
     const matches = v.match(/.{1,4}/g);
     return matches ? matches.join(" ") : "";

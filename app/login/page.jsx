@@ -47,7 +47,11 @@ export default function LoginPage() {
         const user = { ...data.user, role };
         localStorage.setItem("user", JSON.stringify(user));
 
-        if (role === "admin") {
+        const redirectUrl = sessionStorage.getItem("redirectAfterLogin");
+        if (redirectUrl) {
+          sessionStorage.removeItem("redirectAfterLogin");
+          router.push(redirectUrl);
+        } else if (role === "admin") {
           router.push("/admin");
         } else if (role === "customer") {
           router.push("/customer");

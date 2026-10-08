@@ -116,7 +116,14 @@ export default function Navbar({ role = "guest" }: { role?: "guest" | "customer"
                     </Link>
                   </li>
                   <li>
-                    <Link href="/login" className="nav-link nav-link-primary" onClick={closeMobileMenu}>
+                    <Link 
+                      href="/login" 
+                      className="nav-link nav-link-primary" 
+                      onClick={() => {
+                        sessionStorage.removeItem("redirectAfterLogin");
+                        closeMobileMenu();
+                      }}
+                    >
                       <User size={18} />
                       <span>Login</span>
                     </Link>
