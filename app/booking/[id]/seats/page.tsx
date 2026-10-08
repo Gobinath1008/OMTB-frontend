@@ -77,7 +77,7 @@ function SeatBookingContent() {
       try {
         const res = await fetch(
           apiUrl(
-            `/movies?movieId=${id}&theater=${encodeURIComponent(
+            `/bookings/seats?movieId=${encodeURIComponent(String(id))}&theater=${encodeURIComponent(
               theater
             )}&date=${encodeURIComponent(date)}&time=${encodeURIComponent(time)}`
           )
@@ -86,7 +86,7 @@ function SeatBookingContent() {
         const data = await res.json();
 
         if (res.ok) {
-          setBookedSeats(data.bookedSeats || []);
+          setBookedSeats(Array.isArray(data) ? data : []);
         } else {
           console.error(data.message);
         }

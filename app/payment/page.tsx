@@ -23,6 +23,83 @@ import {
   AlertCircle
 } from "lucide-react";
 
+
+// ---------- Card validation helpers ----------
+type CardBrand = "VISA" | "MASTERCARD" | "AMEX" | "RUPAY" | "CARD";
+
+const detectCardBrand = (number: string): CardBrand => {
+  const n = number.replace(/\s/g, "");
+  if (/^3[47]/.test(n)) return "AMEX";
+  if (/^4/.test(n)) return "VISA";
+  if (/^(5[1-5]|2(2[2-9][0-9]|[3-6][0-9]{2}|7[01][0-9]|720))/.test(n)) return "MASTERCARD";
+  if (/^(60|65|81|82|508)/.test(n)) return "RUPAY";
+  return "CARD";
+};
+
+// Luhn checksum - catches mistyped / made-up card numbers
+const passesLuhn = (digits: string): boolean => {
+  let sum = 0;
+  let double = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let d = Number(digits[i]);
+    if (double) {
+      d *= 2;
+      if (d > 9) d -= 9;
+    }
+    sum += d;
+    double = !double;
+  }
+  return sum % 10 === 0;
+};
+
+const validateCardNumber = (value: string): string => {
+  const digits = value.replace(/\s/g, "");
+  if (!digits) return "Card number is required";
+  if (!/^\d+$/.test(digits)) return "Card number can contain digits only";
+  const brand = detectCardBrand(digits);
+  const expectedLength = brand === "AMEX" ? 15 : 16;
+  if (brand === "CARD") return "Unsupported card type. Use Visa, Mastercard, RuPay or Amex";
+  if (digits.length !== expectedLength) {
+    return `${brand} card number must be ${expectedLength} digits`;
+  }
+  if (!passesLuhn(digits)) return "Invalid card number. Please check and re-enter";
+  return "";
+};
+
+const validateExpiry = (value: string): string => {
+  if (!value.trim()) return "Expiry date is required";
+  const match = value.match(/^(\d{2})\/(\d{2})$/);
+  if (!match) return "Use MM/YY format";
+  const month = Number(match[1]);
+  const year = 2000 + Number(match[2]);
+  if (month < 1 || month > 12) return "Month must be between 01 and 12";
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+  if (year < currentYear || (year === currentYear && month < currentMonth)) {
+    return "Card has expired";
+  }
+  if (year > currentYear + 20) return "Expiry year is too far in the future";
+  return "";
+};
+
+const validateCvv = (value: string, brand: CardBrand): string => {
+  if (!value.trim()) return "CVV is required";
+  const expected = brand === "AMEX" ? 4 : 3;
+  if (!/^\d+$/.test(value) || value.length !== expected) {
+    return `CVV must be ${expected} digits`;
+  }
+  return "";
+};
+
+const validateCardName = (value: string): string => {
+  const name = value.trim();
+  if (!name) return "Cardholder name is required";
+  if (name.length < 3) return "Enter the full name as printed on the card";
+  if (!/^[A-Za-z][A-Za-z\s.'-]*$/.test(name)) return "Name can contain letters only";
+  return "";
+};
+
 function PaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -56,28 +133,18 @@ function PaymentContent() {
     const newErrors: { [key: string]: string } = {};
 
     if (paymentMethod === "card") {
-      const cleanNum = formData.cardNumber.replace(/\s/g, "");
-      if (!cleanNum) {
-        newErrors.cardNumber = "Card number is required";
-      } else if (cleanNum.length !== 16) {
-        newErrors.cardNumber = "Card number must be 16 digits";
-      }
+      const brand = detectCardBrand(formData.cardNumber);
+      const numberError = validateCardNumber(formData.cardNumber);
+      if (numberError) newErrors.cardNumber = numberError;
 
-      if (!formData.cardName.trim()) {
-        newErrors.cardName = "Cardholder name is required";
-      }
+      const nameError = validateCardName(formData.cardName);
+      if (nameError) newErrors.cardName = nameError;
 
-      if (!formData.expiry.trim()) {
-        newErrors.expiry = "Expiry date is required";
-      } else if (!/^\d{2}\/\d{2}$/.test(formData.expiry)) {
-        newErrors.expiry = "Use MM/YY format";
-      }
+      const expiryError = validateExpiry(formData.expiry);
+      if (expiryError) newErrors.expiry = expiryError;
 
-      if (!formData.cvv.trim()) {
-        newErrors.cvv = "CVV is required";
-      } else if (formData.cvv.length !== 3) {
-        newErrors.cvv = "CVV must be 3 digits";
-      }
+      const cvvError = validateCvv(formData.cvv, brand);
+      if (cvvError) newErrors.cvv = cvvError;
     } else if (paymentMethod === "netbanking") {
       if (!formData.netBank) {
         newErrors.netBank = "Please select a bank";
@@ -117,13 +184,7 @@ function PaymentContent() {
   };
 
   // Detect card brand
-  const getCardBrand = (number: string) => {
-    const clean = number.replace(/\s/g, "");
-    if (clean.startsWith("4")) return "VISA";
-    if (clean.startsWith("5")) return "MASTERCARD";
-    if (clean.startsWith("3")) return "AMEX";
-    return "CARD";
-  };
+  const getCardBrand = (number: string) => detectCardBrand(number);
 
   const handlePayment = async () => {
     if (!validatePaymentForm()) return;
@@ -467,8 +528,8 @@ function PaymentContent() {
                         <Lock size={16} className="field-icon" />
                         <input
                           type="password"
-                          placeholder="•••"
-                          maxLength={3}
+                          placeholder={getCardBrand(formData.cardNumber) === "AMEX" ? "••••" : "•••"}
+                          maxLength={getCardBrand(formData.cardNumber) === "AMEX" ? 4 : 3}
                           value={formData.cvv}
                           onChange={(e) => handleInputChange("cvv", e.target.value.replace(/\D/g, ""))}
                           className={errors.cvv ? "input-field error" : "input-field"}

@@ -1,25 +1,27 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./bookings.css";
 
-import { Calendar, Clock, MapPin, CreditCard, XCircle, Film, Download, Ticket, AlertCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, CreditCard, XCircle, Film, Download, Ticket, AlertCircle, Armchair } from "lucide-react";
 import { apiUrl } from "../../lib/apiBase";
+import ManageBookingModal, { ModifyResult } from "./ManageBookingModal";
 
 interface Booking {
-  id: number;
+  id: string;
   movieName: string;
-  movieId: number;
+  movieId: string | number;
   theater: string;
   date: string;
   time: string;
   seats: string[];
   total: number;
-  userId?: number;
+  userId?: string | number;
   userName?: string;
   userEmail?: string;
   bookedAt?: string;
+  seatPrices?: Record<string, number>;
 }
 
 function getShowEndDate(booking: Pick<Booking, "date" | "time">): Date | null {
@@ -65,6 +67,8 @@ export default function MyBookingsPage() {
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [managing, setManaging] = useState<Booking | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -101,7 +105,7 @@ export default function MyBookingsPage() {
     setLoading(false);
   };
 
-  const cancelBooking = async (id: number) => {
+  const cancelBooking = async (id: string) => {
     const confirmed = confirm("Are you sure you want to cancel this booking?");
     if (!confirmed) return;
 
@@ -134,6 +138,18 @@ export default function MyBookingsPage() {
       console.error("Error canceling booking:", error);
       alert("Something went wrong while canceling.");
     }
+  };
+
+  const handleModified = (result: ModifyResult) => {
+    if (!managing) return;
+    if (result.bookingCancelled || !result.booking) {
+      setBookings((prev) => prev.filter((b) => b.id !== managing.id));
+    } else {
+      const updated = result.booking;
+      setBookings((prev) => prev.map((b) => (b.id === managing.id ? { ...b, ...updated } : b)));
+    }
+    setNotice(result.message);
+    setManaging(null);
   };
 
   const generateTicketHTML = (booking: Booking) => {
@@ -264,6 +280,13 @@ export default function MyBookingsPage() {
           <p>View and manage your movie ticket bookings</p>
         </div>
 
+        {notice && (
+          <div className="bookings-notice">
+            <span>{notice}</span>
+            <button onClick={() => setNotice(null)} aria-label="Dismiss">✕</button>
+          </div>
+        )}
+
         {loading ? (
           <div className="loading-container">
             <div className="loading-spinner"></div>
@@ -339,12 +362,20 @@ export default function MyBookingsPage() {
                       Download
                     </button>
                     <button
+                      className="change-btn"
+                      onClick={() => setManaging(booking)}
+                      disabled={expired || showDateUnavailable}
+                    >
+                      <Armchair size={16} />
+                      Manage Seats
+                    </button>
+                    <button
                       className="cancel-btn"
                       onClick={() => cancelBooking(booking.id)}
                       disabled={expired}
                     >
                       <XCircle size={16} />
-                      Cancel
+                      Cancel All
                     </button>
                   </div>
                 </div>
@@ -354,6 +385,14 @@ export default function MyBookingsPage() {
           </div>
         )}
       </div>
+
+      {managing && (
+        <ManageBookingModal
+          booking={managing}
+          onClose={() => setManaging(null)}
+          onUpdated={handleModified}
+        />
+      )}
     </div>
   );
 }
