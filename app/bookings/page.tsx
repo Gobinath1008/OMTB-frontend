@@ -6,9 +6,10 @@ import "./bookings.css";
 
 import { Calendar, Clock, MapPin, CreditCard, XCircle, Film, Download, Ticket, AlertCircle, Armchair, Utensils, CheckCircle2 } from "lucide-react";
 import { apiUrl } from "../../lib/apiBase";
-import { CancelBookingResponse } from "../../lib/api";
+import { CancelBookingResponse, ModifyFoodResponse } from "../../lib/api";
 import ManageBookingModal, { ModifyResult } from "./ManageBookingModal";
 import CancelBookingModal from "./CancelBookingModal";
+import ManageFoodModal from "./ManageFoodModal";
 
 interface Booking {
   id: string;
@@ -84,6 +85,7 @@ export default function MyBookingsPage() {
   const [loading, setLoading] = useState(true);
   const [managing, setManaging] = useState<Booking | null>(null);
   const [cancellingBooking, setCancellingBooking] = useState<Booking | null>(null);
+  const [editingFoodBooking, setEditingFoodBooking] = useState<Booking | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
@@ -188,6 +190,28 @@ export default function MyBookingsPage() {
     );
     setNotice(result.message);
     setCancellingBooking(null);
+  };
+
+  const handleFoodUpdated = (result: ModifyFoodResponse) => {
+    if (!editingFoodBooking) return;
+    setBookings((prev) =>
+      prev.map((b) => {
+        if (b.id === editingFoodBooking.id) {
+          const updated = result.booking || {};
+          return {
+            ...b,
+            ...updated,
+            foodItems: updated.foodItems ?? b.foodItems,
+            foodTotal: updated.foodTotal ?? b.foodTotal,
+            total: updated.total ?? (b.total + result.priceDifference),
+            status: updated.status || b.status,
+          };
+        }
+        return b;
+      })
+    );
+    setNotice(result.message);
+    setEditingFoodBooking(null);
   };
 
   const generateTicketHTML = (booking: Booking) => {
@@ -440,6 +464,21 @@ export default function MyBookingsPage() {
                       Manage Seats
                     </button>
                     <button
+                      className="food-edit-btn"
+                      onClick={() => setEditingFoodBooking(booking)}
+                      disabled={expired || showDateUnavailable || isCancelled}
+                      title={
+                        isCancelled
+                          ? "Booking is cancelled"
+                          : expired
+                          ? "Show has already ended"
+                          : "Change or add movie snacks"
+                      }
+                    >
+                      <Utensils size={15} />
+                      <span>{booking.foodItems && booking.foodItems.length > 0 ? "Edit Food" : "Add Food"}</span>
+                    </button>
+                    <button
                       className="cancel-btn"
                       onClick={() => setCancellingBooking(booking)}
                       disabled={expired || isCancelled}
@@ -470,6 +509,14 @@ export default function MyBookingsPage() {
           booking={cancellingBooking}
           onClose={() => setCancellingBooking(null)}
           onSuccess={handleCancelled}
+        />
+      )}
+
+      {editingFoodBooking && (
+        <ManageFoodModal
+          booking={editingFoodBooking}
+          onClose={() => setEditingFoodBooking(null)}
+          onSuccess={handleFoodUpdated}
         />
       )}
     </div>

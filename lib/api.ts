@@ -60,6 +60,16 @@ export const getShowById = (id: string) => api.get(`/shows/${id}`);
 export const getFoodItems = () => api.get<FoodItem[]>('/food');
 export const getFoods = getFoodItems;
 
+export interface ModifyFoodResponse {
+  booking: any;
+  previousFoodTotal: number;
+  newFoodTotal: number;
+  priceDifference: number;
+  extraToPay: number;
+  refundAmount: number;
+  message: string;
+}
+
 // Bookings
 export const getBookingsByUser = (userId: string) => api.get(`/bookings?userId=${userId}`);
 export const createBooking = (bookingData: any) => api.post('/bookings', bookingData);
@@ -68,6 +78,10 @@ export const cancelBookingWithRefund = (
   id: string,
   cancelType: "ALL" | "FOOD_ONLY" = "ALL"
 ) => api.post<CancelBookingResponse>(`/bookings/${id}/cancel`, { cancelType });
+export const modifyBookingFood = (
+  bookingId: string,
+  foodItems: FoodOrderItem[]
+) => api.patch<ModifyFoodResponse>(`/bookings/${bookingId}/modify-food`, { foodItems });
 export const updateBookingStatus = (id: string, status: string) => api.patch(`/bookings/${id}`, { status });
 
 export default api;
