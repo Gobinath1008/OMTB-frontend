@@ -130,7 +130,7 @@ function SeatBookingContent() {
     }, 0);
   }, [selectedSeats, basePrice]);
 
-  // Proceed to payment
+  // Proceed to food & beverages step
   const handleProceed = () => {
     if (selectedSeats.length === 0) {
       setWarningMessage("Please select at least one seat to proceed.");
@@ -138,15 +138,13 @@ function SeatBookingContent() {
     }
 
     router.push(
-      `/payment?movieId=${id}&movieName=${encodeURIComponent(
+      `/booking/${id}/food?movieId=${id}&movieName=${encodeURIComponent(
         movieName || ""
       )}&theater=${encodeURIComponent(theater || "")}&time=${encodeURIComponent(
         time || ""
       )}&date=${encodeURIComponent(date || "")}&screen=${encodeURIComponent(
         screen || ""
-      )}&seats=${selectedSeats.join(
-        ","
-      )}&total=${totalPrice}`
+      )}&seats=${encodeURIComponent(selectedSeats.join(","))}&ticketTotal=${totalPrice}&total=${totalPrice}`
     );
   };
 
@@ -204,6 +202,14 @@ function SeatBookingContent() {
           <div className="step-separator"></div>
           <div className="step-item">
             <span className="step-num">3</span>
+            <div className="step-text">
+              <span className="step-title">Food & Beverages</span>
+              <span className="step-subtitle">Add movie snacks</span>
+            </div>
+          </div>
+          <div className="step-separator"></div>
+          <div className="step-item">
+            <span className="step-num">4</span>
             <div className="step-text">
               <span className="step-title">Checkout</span>
               <span className="step-subtitle">Payment</span>

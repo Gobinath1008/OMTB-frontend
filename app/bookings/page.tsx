@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./bookings.css";
 
-import { Calendar, Clock, MapPin, CreditCard, XCircle, Film, Download, Ticket, AlertCircle, Armchair } from "lucide-react";
+import { Calendar, Clock, MapPin, CreditCard, XCircle, Film, Download, Ticket, AlertCircle, Armchair, Utensils, CheckCircle2 } from "lucide-react";
 import { apiUrl } from "../../lib/apiBase";
+import { CancelBookingResponse } from "../../lib/api";
 import ManageBookingModal, { ModifyResult } from "./ManageBookingModal";
+import CancelBookingModal from "./CancelBookingModal";
 
 interface Booking {
   id: string;
@@ -22,6 +24,19 @@ interface Booking {
   userEmail?: string;
   bookedAt?: string;
   seatPrices?: Record<string, number>;
+  foodItems?: Array<{
+    foodId: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }>;
+  foodTotal?: number;
+  ticketTotal?: number;
+  tax?: number;
+  status?: string;
+  refundAmount?: number;
+  cancellationFee?: number;
+  cancelledAt?: string;
 }
 
 function getShowEndDate(booking: Pick<Booking, "date" | "time">): Date | null {
@@ -68,6 +83,7 @@ export default function MyBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [managing, setManaging] = useState<Booking | null>(null);
+  const [cancellingBooking, setCancellingBooking] = useState<Booking | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
@@ -150,6 +166,28 @@ export default function MyBookingsPage() {
     }
     setNotice(result.message);
     setManaging(null);
+  };
+
+  const handleCancelled = (result: CancelBookingResponse) => {
+    if (!cancellingBooking) return;
+    setBookings((prev) =>
+      prev.map((b) => {
+        if (b.id === cancellingBooking.id) {
+          const updatedFromBackend = result.booking || {};
+          return {
+            ...b,
+            ...updatedFromBackend,
+            status: result.status,
+            refundAmount: result.refundAmount,
+            cancellationFee: result.cancellationFee,
+            total: updatedFromBackend.total ?? (result.status === "CANCELLED" ? b.total : b.total - result.originalAmount),
+          };
+        }
+        return b;
+      })
+    );
+    setNotice(result.message);
+    setCancellingBooking(null);
   };
 
   const generateTicketHTML = (booking: Booking) => {
@@ -307,19 +345,33 @@ export default function MyBookingsPage() {
               const showEndDate = getShowEndDate(booking);
               const expired = showEndDate !== null && Date.now() > showEndDate.getTime();
               const showDateUnavailable = showEndDate === null;
+              const isCancelled = booking.status === "CANCELLED";
+              const isFoodCancelled = booking.status === "FOOD_CANCELLED";
+
               return (
               <div
-                className={`booking-card ${expired ? "expired" : ""} ${showDateUnavailable ? "date-unavailable" : ""}`}
+                className={`booking-card ${isCancelled ? "cancelled" : ""} ${expired ? "expired" : ""} ${showDateUnavailable ? "date-unavailable" : ""}`}
                 key={booking.id}
               >
-                {(expired || showDateUnavailable) && (
+                {isCancelled && (
+                  <div className="expired-badge" style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.4)' }}>
+                    <AlertCircle size={14} />
+                    Booking Cancelled
+                  </div>
+                )}
+                {!isCancelled && (expired || showDateUnavailable) && (
                   <div className={`expired-badge ${showDateUnavailable ? "date-unavailable-badge" : ""}`}>
                     <AlertCircle size={14} />
                     {showDateUnavailable ? "Show time unavailable" : "Show Expired"}
                   </div>
                 )}
                 <div className="booking-header">
-                  <h2>{booking.movieName}</h2>
+                  <div>
+                    <h2>{booking.movieName}</h2>
+                    {isFoodCancelled && !isCancelled && (
+                      <span className="food-cancelled-badge" style={{ marginTop: '4px' }}>Food Cancelled</span>
+                    )}
+                  </div>
                   <span className="booking-id">#{booking.id}</span>
                 </div>
 
@@ -344,6 +396,24 @@ export default function MyBookingsPage() {
                       ))}
                     </div>
                   </div>
+
+                  {booking.foodItems && booking.foodItems.length > 0 && (
+                    <div className="booking-food-summary">
+                      <Utensils size={14} className="text-primary flex-shrink-0" />
+                      <span>
+                        Snacks: {booking.foodItems.map((f) => `${f.name} (x${f.quantity})`).join(", ")}
+                      </span>
+                    </div>
+                  )}
+
+                  {booking.refundAmount && booking.refundAmount > 0 ? (
+                    <div className="refund-info-pill">
+                      <CheckCircle2 size={15} />
+                      <span>
+                        Refund Processed: ₹{booking.refundAmount} (Fee: ₹{booking.cancellationFee || 0})
+                      </span>
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="booking-footer">
@@ -356,7 +426,7 @@ export default function MyBookingsPage() {
                     <button
                       className="download-btn"
                       onClick={() => downloadTicket(booking)}
-                      disabled={expired}
+                      disabled={expired || isCancelled}
                     >
                       <Download size={16} />
                       Download
@@ -364,18 +434,19 @@ export default function MyBookingsPage() {
                     <button
                       className="change-btn"
                       onClick={() => setManaging(booking)}
-                      disabled={expired || showDateUnavailable}
+                      disabled={expired || showDateUnavailable || isCancelled}
                     >
                       <Armchair size={16} />
                       Manage Seats
                     </button>
                     <button
                       className="cancel-btn"
-                      onClick={() => cancelBooking(booking.id)}
-                      disabled={expired}
+                      onClick={() => setCancellingBooking(booking)}
+                      disabled={expired || isCancelled}
+                      title={isCancelled ? "Booking is already cancelled" : expired ? "Show has already ended" : "Cancel booking with partial refund"}
                     >
                       <XCircle size={16} />
-                      Cancel All
+                      {isCancelled ? "Cancelled" : "Cancel Booking"}
                     </button>
                   </div>
                 </div>
@@ -391,6 +462,14 @@ export default function MyBookingsPage() {
           booking={managing}
           onClose={() => setManaging(null)}
           onUpdated={handleModified}
+        />
+      )}
+
+      {cancellingBooking && (
+        <CancelBookingModal
+          booking={cancellingBooking}
+          onClose={() => setCancellingBooking(null)}
+          onSuccess={handleCancelled}
         />
       )}
     </div>

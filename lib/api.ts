@@ -5,6 +5,34 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
+export interface FoodItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageURL: string;
+  category: string;
+}
+
+export interface FoodOrderItem {
+  foodId: string;
+  name: string;
+  price: number;
+  quantity: number;
+  imageURL?: string;
+  category?: string;
+}
+
+export interface CancelBookingResponse {
+  bookingId: string;
+  status: string;
+  originalAmount: number;
+  cancellationFee: number;
+  refundAmount: number;
+  message: string;
+  booking?: any;
+}
+
 // Auth / Users
 export const getUsers = () => api.get('/users');
 export const getUserById = (id: string) => api.get(`/users/${id}`);
@@ -28,10 +56,18 @@ export const getShows = () => api.get('/shows');
 export const getShowsByMovieAndCity = (movieId: string, cityId: string) => api.get(`/shows?movieId=${movieId}&cityId=${cityId}`);
 export const getShowById = (id: string) => api.get(`/shows/${id}`);
 
+// Food & Beverages
+export const getFoodItems = () => api.get<FoodItem[]>('/food');
+export const getFoods = getFoodItems;
+
 // Bookings
 export const getBookingsByUser = (userId: string) => api.get(`/bookings?userId=${userId}`);
 export const createBooking = (bookingData: any) => api.post('/bookings', bookingData);
 export const cancelBooking = (id: string) => api.delete(`/bookings/${id}`);
+export const cancelBookingWithRefund = (
+  id: string,
+  cancelType: "ALL" | "FOOD_ONLY" = "ALL"
+) => api.post<CancelBookingResponse>(`/bookings/${id}/cancel`, { cancelType });
 export const updateBookingStatus = (id: string, status: string) => api.patch(`/bookings/${id}`, { status });
 
 export default api;

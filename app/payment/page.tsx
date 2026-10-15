@@ -1,7 +1,8 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { apiUrl } from "../../lib/apiBase";
+import { FoodOrderItem } from "../../lib/api";
 import "./payment.css";
 import { 
   CreditCard, 
@@ -20,7 +21,8 @@ import {
   Sparkles,
   ArrowRight,
   Download,
-  AlertCircle
+  AlertCircle,
+  Utensils
 } from "lucide-react";
 
 
@@ -102,7 +104,51 @@ function PaymentContent() {
   const time = decodeURIComponent(searchParams.get("time") || "");
   const date = decodeURIComponent(searchParams.get("date") || "");
   const seats = decodeURIComponent(searchParams.get("seats") || "");
-  const total = searchParams.get("total") || "0";
+  const ticketTotalParam = searchParams.get("ticketTotal");
+  const foodTotalParam = searchParams.get("foodTotal");
+  const taxParam = searchParams.get("tax");
+  const totalParam = searchParams.get("total") || "0";
+
+  const [foodItems, setFoodItems] = useState<FoodOrderItem[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem("omtb_food_cart");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setFoodItems(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load stored food items", e);
+    }
+  }, []);
+
+  const ticketTotal = useMemo(() => {
+    if (ticketTotalParam) return Number(ticketTotalParam);
+    if (foodTotalParam) {
+      return Math.max(0, Number(totalParam) - Number(foodTotalParam) - (taxParam ? Number(taxParam) : 0));
+    }
+    return Number(totalParam);
+  }, [ticketTotalParam, foodTotalParam, taxParam, totalParam]);
+
+  const foodTotal = useMemo(() => {
+    if (foodTotalParam !== null && foodTotalParam !== undefined) return Number(foodTotalParam);
+    return foodItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  }, [foodTotalParam, foodItems]);
+
+  const tax = useMemo(() => {
+    if (taxParam !== null && taxParam !== undefined) return Number(taxParam);
+    return Math.round((ticketTotal + foodTotal) * 0.05 * 100) / 100;
+  }, [taxParam, ticketTotal, foodTotal]);
+
+  const finalPayableTotal = useMemo(() => {
+    if (totalParam && !ticketTotalParam && !foodTotalParam) {
+      return Number(totalParam);
+    }
+    return Math.round((ticketTotal + foodTotal + tax) * 100) / 100;
+  }, [totalParam, ticketTotalParam, foodTotalParam, ticketTotal, foodTotal, tax]);
 
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [loading, setLoading] = useState(false);
@@ -209,10 +255,15 @@ function PaymentContent() {
           date: date,
           time: time,
           seats: seatArray,
-          total: Number(total),
+          ticketTotal: ticketTotal,
+          foodItems: foodItems,
+          foodTotal: foodTotal,
+          tax: tax,
+          total: finalPayableTotal,
           userId: user.id,
           userName: user.name || user.username,
           userEmail: user.email,
+          status: "CONFIRMED",
         }),
       });
 
@@ -223,6 +274,10 @@ function PaymentContent() {
         setLoading(false);
         return;
       }
+
+      try {
+        sessionStorage.removeItem("omtb_food_cart");
+      } catch (e) {}
 
       setConfirmedBookingId(bookingData.id || "BK-" + Math.floor(100000 + Math.random() * 900000));
       setBookingSuccess(true);
@@ -289,8 +344,18 @@ function PaymentContent() {
             </div>
           </div>
           <div className="step-separator active-sep"></div>
+          <div className="step-item completed">
+            <span className="step-num"><CheckCircle2 size={16} /></span>
+            <div className="step-text">
+              <span className="step-title">Food & Beverages</span>
+              <span className="step-subtitle">
+                {foodItems.length > 0 ? `${foodItems.length} Snacks Added` : "None Selected"}
+              </span>
+            </div>
+          </div>
+          <div className="step-separator active-sep"></div>
           <div className="step-item active">
-            <span className="step-num">3</span>
+            <span className="step-num">4</span>
             <div className="step-text">
               <span className="step-title">Checkout</span>
               <span className="step-subtitle">Instant Confirmation</span>
@@ -368,22 +433,45 @@ function PaymentContent() {
                   </div>
                 </div>
 
+                {foodItems.length > 0 && (
+                  <div className="voucher-food-box" style={{ marginTop: '12px', background: 'rgba(255,255,255,0.03)', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span className="v-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                      <Utensils size={11} className="v-label-icon text-primary" />
+                      SNACKS &amp; DRINKS ({foodItems.reduce((acc, i) => acc + i.quantity, 0)})
+                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {foodItems.map((item, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
+                          <span style={{ color: '#ffffff' }}>{item.name} × {item.quantity}</span>
+                          <span style={{ color: '#22c55e', fontWeight: 600 }}>₹{item.price * item.quantity}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Billing Breakdown */}
                 <div className="voucher-billing">
                   <div className="bill-line">
                     <span style={{ color: 'var(--text-muted)' }}>
-                      {seatList.length} Ticket{seatList.length > 1 ? 's' : ''} × ₹{Math.round(Number(total) / seatList.length)}
+                      Ticket Cost ({seatList.length} {seatList.length > 1 ? 'tickets' : 'ticket'})
                     </span>
-                    <span style={{ color: '#ffffff', fontWeight: 700 }}>₹{total}</span>
+                    <span style={{ color: '#ffffff', fontWeight: 700 }}>₹{ticketTotal}</span>
                   </div>
                   <div className="bill-line">
-                    <span style={{ color: 'var(--text-muted)' }}>Convenience Fee &amp; Taxes</span>
-                    <span className="text-success" style={{ fontWeight: 700 }}>FREE</span>
+                    <span style={{ color: 'var(--text-muted)' }}>Food &amp; Beverages</span>
+                    <span style={{ color: foodTotal > 0 ? '#22c55e' : '#ffffff', fontWeight: 700 }}>
+                      {foodTotal > 0 ? `₹${foodTotal}` : "₹0"}
+                    </span>
+                  </div>
+                  <div className="bill-line">
+                    <span style={{ color: 'var(--text-muted)' }}>Taxes &amp; GST (5%)</span>
+                    <span style={{ color: '#ffffff', fontWeight: 700 }}>₹{tax}</span>
                   </div>
                   <div className="bill-divider"></div>
                   <div className="bill-total-line">
-                    <span className="total-text">Total Payable</span>
-                    <span className="total-amount-glow">₹{total}</span>
+                    <span className="total-text">Final Payable Amount</span>
+                    <span className="total-amount-glow">₹{finalPayableTotal}</span>
                   </div>
                 </div>
 
@@ -575,7 +663,7 @@ function PaymentContent() {
                     <QrCode size={36} className="text-primary" />
                     <div className="instruction-text">
                       <span className="inst-title">Instant UPI Verification</span>
-                      <span className="inst-sub">A payment request of ₹{total} will be dispatched to your mobile UPI application.</span>
+                      <span className="inst-sub">A payment request of ₹{finalPayableTotal} will be dispatched to your mobile UPI application.</span>
                     </div>
                   </div>
                 </div>
@@ -639,7 +727,7 @@ function PaymentContent() {
                 ) : (
                   <>
                     <Lock size={18} />
-                    <span>Pay ₹{total} & Confirm Booking</span>
+                    <span>Pay ₹{finalPayableTotal} & Confirm Booking</span>
                     <ArrowRight size={18} />
                   </>
                 )}
@@ -690,7 +778,7 @@ function PaymentContent() {
               </div>
               <div className="conf-row total-conf-row">
                 <span className="conf-label">Amount Paid:</span>
-                <span className="conf-val">₹{total}</span>
+                <span className="conf-val">₹{finalPayableTotal}</span>
               </div>
             </div>
 
